@@ -31,6 +31,29 @@ vector<string> data_stack(STACK_SIZE + 1); // First string in stack can't be use
 string* stack_ptr = &data_stack[0];
 map<string, string> regs {{"ax", ""}, {"bx", ""}, {"cx", ""}};
 
+char typeInString(const string& s){
+
+        // Function to detect what kind of data is stored in a string
+        // (to which data type the string can be safely converted)
+
+		regex float_rx {"-?(\\d+)?\\.\\d+"};
+		regex float_sci_rx {"-?(\\d+)?\\.\\d+e(\\+|-)?\\d+|-?\\d+e-\\d+"};
+		regex int_rx {"-?\\d+"};
+		regex str_rx {"\\\".+\\\""};
+
+		if (regex_match(s, float_rx) || regex_match(s, float_sci_rx)){
+			return 'f';
+		}
+
+		else if (regex_match(s, int_rx)){
+			return 'i';
+		}
+
+		else {
+			return 's';
+		}
+}
+
 
 int main(int argc, char* argv[]){
 
