@@ -46,4 +46,4 @@ Optional: set size of stack. This can be done in the source code (modify preproc
 Only .txt files are accepted. If the name of the .txt file contains whitespaces, the whole file name must be enclosed in quotation marks ("file name.txt"). Empty lines are skipped, empty files are allowed. Leading or trailing whitespaces are not allowed and an exception is thrown.
 </br>
 
-Note: numbers like 4e-3 are floatin-point numbers, so they are accepted. Compiler needs to know the ISO C++11 standard.
+Note: numbers like 4e-3 are floating-point numbers, so they are accepted. Compiler needs to know the ISO C++11 standard.
