@@ -31,6 +31,7 @@ vector<string> data_stack(STACK_SIZE + 1); // First string in stack can't be use
 string* stack_ptr = &data_stack[0];
 map<string, string> regs {{"ax", ""}, {"bx", ""}, {"cx", ""}};
 
+
 char typeInString(const string& s){
 
     // Function to detect what kind of data is stored in a string
@@ -52,6 +53,22 @@ char typeInString(const string& s){
 	else {
 		return 's';
 	}
+}
+
+
+void mov(const string& line){
+
+    // Mov function
+
+    string arg_1 = line.substr(4, 2); // in a valid mov, arg_1 is always stored here
+	string arg_2 = line.substr(8);
+	regex reg {"(a|b|c)x"};
+
+    if (regex_match(arg_2, reg)){
+        arg_2 = regs[arg_2];
+    }
+
+	regs[arg_1] = arg_2;
 }
 
 
@@ -222,7 +239,7 @@ int main(int argc, char* argv[]){
 
     try{
         std::string input_file_name {argv[1]}; // Initialize string with input file name (second command line argument)
-        regex valid_file_name {".+\\.txt"}; //Check if file name ends with .txt (with regex);
+        regex valid_file_name {".+\\.txt"}; //Check if file name ends with .txt (with regex)
 
         if (!regex_match(input_file_name, valid_file_name))
             throw invalid_argument("\nError: file " + input_file_name + ": " + "file extension not allowed. Only .txt files can be read.\n");
@@ -237,7 +254,7 @@ int main(int argc, char* argv[]){
         int error_present {0}; // variable to detect error thrown by commandProcessor()
         int line_num {1}; // variable for output of line number where error occurred
 
-        while (getline(if_stream, next_line)){ //read next line until end of file is reached
+        while (getline(if_stream, next_line)){ // read next line until end of file is reached
             error_present = commandProcessor(next_line); // process current line
             if (error_present != 0){
                 cout << "Error occurred in line " << line_num << ": " << next_line << "\n";
