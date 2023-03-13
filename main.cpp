@@ -113,6 +113,45 @@ void pop(const string& line){
 }
 
 
+void add(const string& line){
+
+	// Addition function
+
+    string arg_1 = line.substr(4, 2);
+	string arg_2 = line.substr(8);
+	regex reg {"(a|b|c)x"};
+
+	char typeof_arg_1 = typeInString(regs[arg_1]);
+	char typeof_arg_2;
+
+	if (regex_match(arg_2, reg)){
+        typeof_arg_2 = typeInString(regs[arg_2]);
+        arg_2 = regs[arg_2];
+	}
+
+	else{
+        typeof_arg_2 = typeInString(arg_2);
+	}
+
+
+	if (typeof_arg_1 == 's' && typeof_arg_2 == 's'){
+		regs[arg_1] = regex_replace(regs[arg_1] + arg_2, regex("\\\"\\\""), "");
+	}
+
+	else if (typeof_arg_1 == 's' || typeof_arg_2 == 's'){
+		throw invalid_argument("\nException: can't add string to numeric value!\n");
+	}
+
+	else if (typeof_arg_1 == 'i' && typeof_arg_2 == 'i'){
+		regs[arg_1] = std::to_string(stoi(regs[arg_1]) + stoi(arg_2));
+	}
+
+	else{
+		regs[arg_1] = to_string(stof(regs[arg_1]) + stof(arg_2));
+	}
+}
+
+
 int commandProcessor(const string& line){
 
     // Check if next line of file is valid assembler code. This is done with regex_match.
