@@ -33,25 +33,188 @@ map<string, string> regs {{"ax", ""}, {"bx", ""}, {"cx", ""}};
 
 char typeInString(const string& s){
 
-        // Function to detect what kind of data is stored in a string
-        // (to which data type the string can be safely converted)
+    // Function to detect what kind of data is stored in a string
+    // (to which data type the string can be safely converted)
 
-		regex float_rx {"-?(\\d+)?\\.\\d+"};
-		regex float_sci_rx {"-?(\\d+)?\\.\\d+e(\\+|-)?\\d+|-?\\d+e-\\d+"};
-		regex int_rx {"-?\\d+"};
-		regex str_rx {"\\\".+\\\""};
+	regex float_rx {"-?(\\d+)?\\.\\d+"};
+	regex float_sci_rx {"-?(\\d+)?\\.\\d+e(\\+|-)?\\d+|-?\\d+e-\\d+"};
+	regex int_rx {"-?\\d+"};
+	regex str_rx {"\\\".+\\\""};
 
-		if (regex_match(s, float_rx) || regex_match(s, float_sci_rx)){
-			return 'f';
-		}
+	if (regex_match(s, float_rx) || regex_match(s, float_sci_rx)){
+		return 'f';
+	}
 
-		else if (regex_match(s, int_rx)){
-			return 'i';
-		}
+	else if (regex_match(s, int_rx)){
+		return 'i';
+	}
 
-		else {
-			return 's';
-		}
+	else {
+		return 's';
+	}
+}
+
+
+int commandProcessor(const string& line){
+
+    // Check if next line of file is valid assembler code. This is done with regex_match.
+    // If the line is valid code, the function corresponding to the command is called.
+    //
+    // Most of the error handling is done here. Invalid commands are caught by using
+    // proper regexs (everything not matching any regex is an invalid command).
+    // Invalid arguments are detected by the called functions that can throw
+    // the invalid_argument exception
+    //
+    // Arithmetic operations of floats and ints as well as addition of strings is achieved
+    // by the arithmetic operators that are overloaded for primitive types by default
+
+    regex valid_mov {"mov (a|b|c)x, (((a|b|c)x)|(-?(\\d+)?(\\.\\d+(e(\\+|-)?\\d+)?)?)|(\\\".+\\\")|(-?\\d+e-\\d+))"};
+    regex valid_push {"push (((a|b|c)x)|(-?(\\d+)?(\\.\\d+(e(\\+|-)?\\d+)?)?)|(\\\".+\\\")|(-?\\d+e-\\d+))"};
+    regex valid_pop {"pop (a|b|c)x"};
+    regex valid_add {"add (a|b|c)x, (((a|b|c)x)|(-?(\\d+)?(\\.\\d+(e(\\+|-)?\\d+)?)?)|(\\\".+\\\")|(-?\\d+e-\\d+))"};
+    regex valid_sub {"sub (a|b|c)x, (((a|b|c)x)|(-?(\\d+)?(\\.\\d+(e(\\+|-)?\\d+)?)?)|(-?\\d+e-\\d+))"};
+    regex valid_div {"div (a|b|c)x, (((a|b|c)x)|(-?(\\d+)?(\\.\\d+(e(\\+|-)?\\d+)?)?)|(-?\\d+e-\\d+))"};
+    regex valid_mul {"mul (a|b|c)x, (((a|b|c)x)|(-?(\\d+)?(\\.\\d+(e(\\+|-)?\\d+)?)?)|(-?\\d+e-\\d+))"};
+    regex valid_print {"print (((a|b|c)x)|(-?(\\d+)?(\\.\\d+(e(\\+|-)?\\d+)?)?)|(\\\".+\\\")|(-?\\d+e-\\d+))"};
+    regex valid_command {"(mov|mov .+)|(push|push .+)|(pop|pop .+)|(add|add .+)|(sub|sub .+)|(div|div .+)|(mul|mul .+)|(print|print .+)"};
+
+
+    // MOV
+    if (regex_match(line, valid_mov)){
+        try{
+            mov(line);
+            return 0;
+        }
+
+        catch(invalid_argument& e){
+            cerr << e.what() << "\n";
+            return -1;
+        }
+    }
+
+
+    // PUSH
+    else if (regex_match(line, valid_push)){
+        try{
+            push(line);
+            return 0;
+        }
+
+        catch(invalid_argument& e){
+            cerr << e.what() << "\n";
+            return -1;
+        }
+
+        catch(out_of_range& i){
+            cerr << i.what() << "\n";
+            return -1;
+        }
+    }
+
+
+    // POP
+    else if (regex_match(line, valid_pop)){//check if it's a valid 'pop' command
+        try{
+            pop(line);
+            return 0;
+        }
+
+        catch(invalid_argument& e){
+            cerr << e.what() << "\n";
+            return -1;
+        }
+
+        catch(out_of_range& i){
+            cerr << i.what() << "\n";
+            return -1;
+        }
+    }
+
+
+    // ADD
+    else if (regex_match(line, valid_add)){//check if it's a valid 'add' command
+        try{
+            add(line);
+            return 0;
+        }
+
+        catch(invalid_argument& e){
+            cerr << e.what() << "\n";
+            return -1;
+        }
+    }
+
+
+    // SUBTRACT
+    else if (regex_match(line, valid_sub)){
+        try{
+            sub(line);
+            return 0;
+        }
+
+        catch(invalid_argument& e){
+            cerr << e.what() << "\n";
+            return -1;
+        }
+    }
+
+
+    // DIVIDE
+    else if (regex_match(line, valid_div)){
+        try{
+            div(line);
+            return 0;
+        }
+
+        catch(invalid_argument& e){
+            cerr << e.what() << "\n";
+            return -1;
+        }
+    }
+
+
+    // MULTIPLY
+    else if (regex_match(line, valid_mul)){
+        try{
+            mul(line);
+            return 0;
+        }
+
+        catch(invalid_argument& e){
+            cerr << e.what() << "\n";
+            return -1;
+        }
+    }
+
+
+    // PRINT
+    else if (regex_match(line, valid_print)){
+        try{
+            print(line);
+            return 0;
+        }
+
+        catch(invalid_argument& e){
+            cerr << e.what() << "\n";
+            return -1;
+        }
+    }
+
+
+    else if (line == ""){
+        return 0;
+    }
+
+
+    else{
+        if (regex_match(line, valid_command)){
+            cout << "\nInvalid argument(s) - halting interpreter.\n";
+        }
+        else{
+            cout << "\nInvalid command - halting interpreter.\n";
+        }
+        return -1;
+    }
 }
 
 
