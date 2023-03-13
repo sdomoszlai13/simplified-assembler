@@ -97,6 +97,22 @@ void push(const string& line){
 }
 
 
+void pop(const string& line){
+
+    // Pop function
+
+    if (stack_ptr == &data_stack[0]){
+        throw out_of_range ("Stack empty! Can't pop. Halting interpreter.\n");
+    }
+
+    string arg_1 = line.substr(4, 2);
+
+	regs[arg_1] = *stack_ptr;
+	if (stack_ptr != &data_stack[0])
+        stack_ptr--;
+}
+
+
 int commandProcessor(const string& line){
 
     // Check if next line of file is valid assembler code. This is done with regex_match.
