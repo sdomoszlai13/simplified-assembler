@@ -72,6 +72,31 @@ void mov(const string& line){
 }
 
 
+void push(const string& line){
+
+    // Push function
+
+    if (stack_ptr == &data_stack[STACK_SIZE]-1){
+        throw out_of_range ("Stack full! Can't push. Halting interpreter.\n");
+    }
+
+
+    string str = line.substr(5);
+    regex reg {"(a|b|c)x"};
+
+    if (regex_match(str, reg)){
+        stack_ptr++;
+        *stack_ptr = regs[str];
+    }
+
+    else{
+        cout << str << "\n";
+        stack_ptr++;
+        *stack_ptr = str;
+    }
+}
+
+
 int commandProcessor(const string& line){
 
     // Check if next line of file is valid assembler code. This is done with regex_match.
