@@ -42,16 +42,16 @@ char typeInString(const string& s){
 	regex int_rx {"-?\\d+"};
 	regex str_rx {"\\\".+\\\""};
 
-	if (regex_match(s, float_rx) || regex_match(s, float_sci_rx)){
+	if (regex_match(s, float_rx) || regex_match(s, float_sci_rx)){ // float
 		return 'f';
 	}
 
-	else if (regex_match(s, int_rx)){
+	else if (regex_match(s, int_rx)){ // int
 		return 'i';
 	}
 
 	else {
-		return 's';
+		return 's'; // str
 	}
 }
 
@@ -134,19 +134,19 @@ void add(const string& line){
 	}
 
 
-	if (typeof_arg_1 == 's' && typeof_arg_2 == 's'){
+	if (typeof_arg_1 == 's' && typeof_arg_2 == 's'){ // str
 		regs[arg_1] = regex_replace(regs[arg_1] + arg_2, regex("\\\"\\\""), "");
 	}
 
-	else if (typeof_arg_1 == 's' || typeof_arg_2 == 's'){
+	else if (typeof_arg_1 == 's' || typeof_arg_2 == 's'){ // str and not str
 		throw invalid_argument("\nException: can't add string to numeric value!\n");
 	}
 
-	else if (typeof_arg_1 == 'i' && typeof_arg_2 == 'i'){
+	else if (typeof_arg_1 == 'i' && typeof_arg_2 == 'i'){ // int
 		regs[arg_1] = std::to_string(stoi(regs[arg_1]) + stoi(arg_2));
 	}
 
-	else{
+	else{ // float
 		regs[arg_1] = to_string(stof(regs[arg_1]) + stof(arg_2));
 	}
 }
@@ -173,15 +173,15 @@ void sub(const string& line){
 	}
 
 
-	if (typeof_arg_1 == 's' || typeof_arg_2 == 's'){
+	if (typeof_arg_1 == 's' || typeof_arg_2 == 's'){ // str
 		throw invalid_argument("\nException: can't subtract strings!\n");
 	}
 
-	else if (typeof_arg_1 == 'i' && typeof_arg_2 == 'i'){
+	else if (typeof_arg_1 == 'i' && typeof_arg_2 == 'i'){ // int
 		regs[arg_1] = std::to_string(stoi(regs[arg_1]) - stoi(arg_2));
 	}
 
-	else{
+	else{ // float
 		regs[arg_1] = to_string(stof(regs[arg_1]) - stof(arg_2));
 	}
 }
@@ -208,11 +208,11 @@ void div(const string& line){
 	}
 
 
-	if (typeof_arg_1 == 's' || typeof_arg_2 == 's'){
+	if (typeof_arg_1 == 's' || typeof_arg_2 == 's'){ // str
 		throw invalid_argument("\nException: can't divide strings!\n");
 	}
 
-	else if (typeof_arg_1 == 'i' && typeof_arg_2 == 'i'){
+	else if (typeof_arg_1 == 'i' && typeof_arg_2 == 'i'){ // int
         if (arg_2 == "0")
             throw invalid_argument("\nException: can't divide by zero!\n");
         regs[arg_1] = std::to_string(stoi(regs[arg_1]) / stoi(arg_2));
@@ -220,7 +220,7 @@ void div(const string& line){
 
 	}
 
-	else{
+	else{ // float
         if (stof(arg_2) == 0)
             throw invalid_argument("\nException: can't divide by zero!\n");
 		regs[arg_1] = to_string(stof(regs[arg_1]) / stof(arg_2));
@@ -248,16 +248,45 @@ void mul(const string& line){
 	}
 
 
-	if (typeof_arg_1 == 's' || typeof_arg_2 == 's'){
+	if (typeof_arg_1 == 's' || typeof_arg_2 == 's'){ // str
 		throw invalid_argument("\nException: can't multiply strings!\n");
 	}
 
-	else if (typeof_arg_1 == 'i' && typeof_arg_2 == 'i'){
+	else if (typeof_arg_1 == 'i' && typeof_arg_2 == 'i'){ // int
 		regs[arg_1] = to_string(stoi(regs[arg_1]) * stoi(arg_2));
 	}
 
-	else
+	else{ // float
         regs[arg_1] = to_string(stof(regs[arg_1]) * stof(arg_2));
+    }
+}
+
+
+void print(const string& line){
+
+	// Print function
+
+    string to_print = line.substr(6);
+    regex reg {"(a|b|c)x"};
+    regex str_with_quotes {"\\\".+\\\""};
+
+    if (regex_match(to_print, reg)){
+        regex float_compare {"(-?(\\d+)?\\.\\d+)|(-?(\\d+)?\\.\\d+e(\\+|-)?\\d+)|(-?\\d+e-\\d+)"};
+        if (regex_match(regs[to_print], float_compare)){
+                cout << stof(regs[to_print]) << "\n"; // must be converted to float for cout, otherwise numerical errors happen
+            return;
+        }
+
+        else
+        to_print = regs[to_print];
+    }
+
+
+    else if (regex_match(to_print, str_with_quotes)){
+        to_print = to_print.substr(1, to_print.size()-2); // remove quotes from string literal
+    }
+
+    cout << to_print << "\n";
 }
 
 
