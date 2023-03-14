@@ -37,7 +37,7 @@ Only lower case commands are accepted, otherwise the unknown command exception i
 
 ## Instructions to run:
 
-Run `interpret.exe <filename>` in the command prompt, where <filename> ends with .txt.
+Run `interpret.exe <filename>` in the command prompt, where `<filename>` ends with .txt.
 
 Optional: set size of stack. This can be done in the source code (modify preprocessor directive). Default value is 100.
 </br>
